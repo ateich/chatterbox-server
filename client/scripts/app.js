@@ -1,6 +1,6 @@
 // YOUR CODE HERE:
-var parseUrl = 'http://127.0.0.1:3000/?order=-createdAt';
-var postUrl = 'http://127.0.0.1:3000';
+var parseUrl = 'http://127.0.0.1:3000/classes/messages?order=-createdAt';
+var postUrl = 'http://127.0.0.1:3000/classes/messages';
 var app = {
   index: 0,
   server: parseUrl,
@@ -36,7 +36,7 @@ var app = {
       success: function(data){
         data = JSON.parse(data);
         // console.log(data);
-        // data = data.results;
+        data = data.results;
         var totalItems = 0;
         for(var key in app.rooms){
           key = key+'';

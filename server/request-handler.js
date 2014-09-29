@@ -1,12 +1,62 @@
 var url = require("url");
 var qs = require('querystring');
 var messages = [];
+var rooms = [];
 /* You should implement your request handler function in this file.
  * And hey! This is already getting passed to http.createServer()
  * in basic-server.js. But it won't work as is.
  * You'll have to figure out a way to export this function from
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
+exports.handler = function(request, response){
+  var statusCode = 404;
+
+  /* Without this line, this server wouldn't work. See the note
+   * below about CORS. */
+  var headers = defaultCorsHeaders;
+
+  headers['Content-Type'] = "text/plain";
+  console.log(request.url);
+  if(request.url === '/classes/room1'){
+    console.log('room check');
+    statusCode = 200;
+    if(request.method === "GET"){
+      console.log("Get IS working");
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify({"results": rooms}));
+    } else if (request.method === "POST"){
+      statusCode = 201;
+
+      var body = "";
+      // console.log("TEST: ", messages);
+      request.on('data', function(data){
+        // console.log('data');
+        // console.log(data);
+        body+=data;
+      });
+      request.on('end', function(){
+        var post = qs.parse(body);
+        for(var key in post){
+          post = key;
+          post = JSON.parse(post);
+          post.createdAt = new Date().toJSON().toString();
+       /*   console.log(post);*/
+        }
+        rooms.push(post);
+      });
+      response.end('true');
+    }
+  }
+  console.log(statusCode);
+
+  /* .writeHead() tells our server what HTTP status code to send back */
+  response.writeHead(statusCode, headers);
+
+  /* Make sure to always call response.end() - Node will not send
+   * anything back to the client until you do. The string you pass to
+   * response.end() will be the body of the response - i.e. what shows
+   * up in the browser.*/
+},
 
 exports.handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
@@ -14,16 +64,29 @@ exports.handleRequest = function(request, response) {
 
   /* Documentation for both request and response can be found at ??? */
 
+  var statusCode = 404;
+
+  /* Without this line, this server wouldn't work. See the note
+   * below about CORS. */
+  var headers = defaultCorsHeaders;
+
+  headers['Content-Type'] = "text/plain";
+
   // console.log("Serving request type " + request.method + " for url " + request.url);
   // console.log(request);
   // console.log(url.parse(request.url));
 
   //console.log(request.method);
 
-  if(request.method === "GET"){
+  console.log(request.url);
+  if(request.url !== '/classes/messages' && request.url!=='/classes/messages?order=-createdAt'){
+    statusCode = 404;
+  } else if(request.method === "GET"){
+    statusCode = 200;
     // create messages array and return array
-    response.end(JSON.stringify(messages));
+    response.end(JSON.stringify({'results':messages}));
   } else if (request.method === "POST"){
+    statusCode = 201;
     //console.log('POSTING')
     //console.log(request.message);
     var body = "";
@@ -39,21 +102,22 @@ exports.handleRequest = function(request, response) {
         post = key;
         post = JSON.parse(post);
         post.createdAt = new Date().toJSON().toString();
-        console.log(post);
+     /*   console.log(post);*/
       }
       messages.push(post);
     });
     // console.log(body);
     //messages.push(url.parse(request.message));
-  };
+  }
 
-  var statusCode = 200;
-
-  /* Without this line, this server wouldn't work. See the note
-   * below about CORS. */
-  var headers = defaultCorsHeaders;
-
-  headers['Content-Type'] = "text/plain";
+  if(request.url === '/classes/room'){
+    console.log('room check');
+    statusCode = 200;
+    if(request.method === "GET"){
+      response.end(JSON.stringify({'results': rooms}));
+    }
+  }
+  console.log(statusCode);
 
   /* .writeHead() tells our server what HTTP status code to send back */
   response.writeHead(statusCode, headers);

@@ -1,7 +1,17 @@
 var url = require("url");
 var qs = require('querystring');
+var fs = require("fs");
 var messages = [];
 var rooms = [];
+
+fs.readFile('./messages', "utf8", function(error, data){
+  if(error){
+    console.log('LOADING OLD MESSAGES ERROR', error);
+  } else {
+    messages = JSON.parse(data);
+    console.log(messages);
+  }
+});
 /* You should implement your request handler function in this file.
  * And hey! This is already getting passed to http.createServer()
  * in basic-server.js. But it won't work as is.
@@ -105,7 +115,18 @@ exports.handleRequest = function(request, response) {
      /*   console.log(post);*/
       }
       messages.push(post);
+
+      var toSave = JSON.stringify(messages);
+      fs.writeFile("./messages", toSave, function(error){
+        if(error){
+          console.log(error);
+        } else {
+          console.log("Messages are stored");
+        }
+      });
     });
+
+
     // console.log(body);
     //messages.push(url.parse(request.message));
   }

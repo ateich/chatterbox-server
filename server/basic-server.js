@@ -1,7 +1,16 @@
 /* Import node's http module: */
 var http = require("http");
 var requestHandler = require("./request-handler");
+var fs = require("fs");
+var paperboy = require('node-static');
+var file = new paperboy.Server('../client');
 
+
+require('http').createServer(function(request, response){
+  request.addListener('end', function(){
+    file.serve(request, response);
+  }).resume();
+}).listen(8080);
 
 /* Every server needs to listen on a port with a unique number. The
  * standard port for HTTP servers is port 80, but that port is

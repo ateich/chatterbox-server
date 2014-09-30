@@ -1,4 +1,3 @@
-// YOUR CODE HERE:
 var parseUrl = 'http://127.0.0.1:3000/classes/messages?order=-createdAt';
 var postUrl = 'http://127.0.0.1:3000/classes/messages';
 var app = {
@@ -35,15 +34,12 @@ var app = {
       url: parseUrl,
       success: function(data){
         data = JSON.parse(data);
-        // console.log(data);
         data = data.results;
         var totalItems = 0;
         for(var key in app.rooms){
           key = key+'';
           totalItems += app.rooms[key].length;
         }
-
-        console.log('fetch: ', data.length);
 
         app.displayMessages(data);
       },
@@ -56,14 +52,9 @@ var app = {
     if (data === undefined) {
       return;
     }
-    console.log(data);
-    console.log(data.length);
-    //data = data.reverse();
 
     for (var i = 0; i < data.length; i++) {
-      // console.log('display message check: ' , this.mostRecentPost[this.currentRoom])
       if(!this.mostRecentPost[this.currentRoom] || this.mostRecentPost[this.currentRoom] < data[i].createdAt){
-        console.log('about to add message');
         app.addMessage(data[i]);
       }
     }
@@ -74,8 +65,6 @@ var app = {
   addMessage: function(message) {
     //Check for blank message
     if(message.roomname === 'FOREVER ROOM!'){
-      console.log(document.event);
-      console.log(message);
     }
     if(!message.text || message.text.length < 1){
       return;
@@ -133,7 +122,6 @@ var app = {
                   .css('height', msgHeight + 'px');
 
       $user.on('click', function(){
-        console.log('clicked friend');
         app.friends[message.username] = true;
         $('div').find("[data-name='" + message.username + "']").addClass('friend');
       });
@@ -155,9 +143,6 @@ var app = {
   },
 
   addRoom: function(roomName) {
-    // console.log(roomName);
-    // roomName = roomName.replace('#', '');
-
     roomName = roomName.replace(/[!#]/g, "");
     roomName = roomName + '';
     app.rooms[roomName] = new Array();
@@ -177,7 +162,6 @@ var app = {
       app.currentRoom = roomName;
 
       app.fetch();
-      //app.displayMessages(app.rooms[roomName]);
     });
   },
   addFriend: function() {
